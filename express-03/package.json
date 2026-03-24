@@ -1,8 +1,9 @@
 {
   "name": "express-01",
   "version": "1.0.0",
-  "description": "Projeto Express + PostgreSQL para estudo",
+  "type": "module",
   "main": "api/index.js",
+  "description": "Projeto Express + PostgreSQL para estudo",
   "scripts": {
     "start": "nodemon --exec babel-node api/index.js"
   },
@@ -13,7 +14,6 @@
   ],
   "author": "Andre Gomes",
   "license": "MIT",
-  "type": "commonjs",
   "dependencies": {
     "@babel/core": "^7.29.0",
     "@babel/node": "^7.29.0",
