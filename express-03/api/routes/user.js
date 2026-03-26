@@ -2,71 +2,68 @@ import { Router } from "express";
 
 const router = Router();
 
-//  GET ALL
+// GET ALL
 router.get("/", async (req, res) => {
-  const users = await req.context.models.User.findAll();
-  return res.json(users);
-});
-
-//  GET BY ID
-router.get("/:userId", async (req, res) => {
-  const user = await req.context.models.User.findByPk(req.params.userId);
-
-  if (!user) {
-    return res.status(404).json({ error: "Usuário não encontrado" });
+  try {
+    const users = await req.context.models.User.findAll();
+    return res.json(users);
+  } catch (error) {
+    return res.status(500).json({ error: "Erro ao buscar usuários" });
   }
-
-  return res.json(user);
 });
 
-//  CREATE
+// GET BY ID
+router.get("/:userId", async (req, res) => {
+  try {
+    const user = await req.context.models.User.findByPk(req.params.userId);
+    if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
+    
+    return res.json(user);
+  } catch (error) {
+    return res.status(500).json({ error: "Erro na requisição" });
+  }
+});
+
+// CREATE - 201 Created
 router.post("/", async (req, res) => {
   try {
-    const user = await req.context.models.User.create({
-      username: req.body.username,
-      email: req.body.email,
-    });
-
+    // Blindagem: pegamos apenas o que queremos
+    const { username, email } = req.body;
+    const user = await req.context.models.User.create({ username, email });
+    
     return res.status(201).json(user);
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    // 422 para erros de validação (ex: email duplicado)
+    return res.status(422).json({ error: error.message });
   }
 });
 
-//  UPDATE
+// UPDATE - 200 OK
 router.put("/:userId", async (req, res) => {
   try {
     const user = await req.context.models.User.findByPk(req.params.userId);
+    if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
 
-    if (!user) {
-      return res.status(404).json({ error: "Usuário não encontrado" });
-    }
-
-    await user.update({
-      username: req.body.username,
-      email: req.body.email,
-    });
-
+    const { username, email } = req.body;
+    await user.update({ username, email });
+    
     return res.json(user);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
 });
 
-//  DELETE
+// DELETE - 204 No Content
 router.delete("/:userId", async (req, res) => {
   try {
     const user = await req.context.models.User.findByPk(req.params.userId);
-
-    if (!user) {
-      return res.status(404).json({ error: "Usuário não encontrado" });
-    }
+    if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
 
     await user.destroy();
-
-    return res.json({ message: "Usuário deletado com sucesso" });
+    // 204 indica sucesso, mas sem corpo na resposta
+    return res.status(204).send(); 
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return res.status(500).json({ error: "Erro interno ao deletar" });
   }
 });
 

@@ -2,13 +2,13 @@ import { Router } from "express";
 
 const router = Router();
 
-// ✅ GET ALL
+//  GET ALL
 router.get("/", async (req, res) => {
   const messages = await req.context.models.Message.findAll();
   return res.json(messages);
 });
 
-// ✅ GET BY ID
+//  GET BY ID
 router.get("/:messageId", async (req, res) => {
   const message = await req.context.models.Message.findByPk(
     req.params.messageId
@@ -21,7 +21,7 @@ router.get("/:messageId", async (req, res) => {
   return res.json(message);
 });
 
-// ✅ CREATE
+//  CREATE
 router.post("/", async (req, res) => {
   try {
     if (!req.context.me) {
@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// ✅ UPDATE (faltava!)
+//  UPDATE 
 router.put("/:messageId", async (req, res) => {
   try {
     const message = await req.context.models.Message.findByPk(
@@ -60,7 +60,7 @@ router.put("/:messageId", async (req, res) => {
   }
 });
 
-// ✅ DELETE
+//  DELETE
 router.delete("/:messageId", async (req, res) => {
   try {
     const message = await req.context.models.Message.findByPk(
